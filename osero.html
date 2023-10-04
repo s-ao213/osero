@@ -8,16 +8,32 @@
     <link rel="stylesheet" href="osero.css">
     </head>
     <body>
+
     <!-- 現在の手番を表示する -->
-    <p>現在の手番は<span id="current-turn">黒</span>です</p>
+<h1 class="odd">オセロゲーム</h1>
+<p>現在の手番は<span id="current-turn">黒</span>です</p>
+<p>白の数: <span id="white-count">0</span></p>
+<p>黒の数: <span id="black-count">0</span></p>
+    
+    <!-- パスボタン -->
+    <button id="pass">パスする</button>
+    
     <!-- 盤 -->
     <div id="stage" class="stage"></div>
+    
     <!-- 各マスを描画するためのテンプレート -->
     <div id="square-template" class="square">
         <div class="stone"></div>
     </div>
-    <!-- パスボタン -->
-    <button id="pass">パスする</button>
+
+    <!-- ゲームオーバー画面 -->
+<div id="game-over" class="game-over">
+    <h2>ゲーム終了</h2>
+    <p id="winner-text">勝者: </p>
+    <button id="restart-button">再プレイ</button>
+</div>
+
+
     <script src="osero.js"></script>
 </body>
 </html>
