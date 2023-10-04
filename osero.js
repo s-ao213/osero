@@ -4,7 +4,19 @@ const stoneStateList = [];
 let currentColor = 1;
 const currentTurnText = document.getElementById("current-turn");
 const passButton = document.getElementById("pass");
+const blackCountText = document.getElementById("black-count");
+const whiteCountText = document.getElementById("white-count");
 
+// 石の数をカウントする関数
+const countStones = () => {
+  const blackStonesNum = stoneStateList.filter(state => state === 1).length;
+  const whiteStonesNum = stoneStateList.filter(state => state === 2).length;
+
+  blackCountText.textContent = blackStonesNum;
+  whiteCountText.textContent = whiteStonesNum;
+}
+
+// 色を変えるプログラム
 const changeTurn = () => {
   currentColor = 3 - currentColor;
   
@@ -17,7 +29,9 @@ const changeTurn = () => {
 
 const getReversibleStones = (idx) => {
   //クリックしたマスから見て、各方向にマスがいくつあるかをあらかじめ計算する
-  //squareNumsの定義はやや複雑なので、理解せずコピーアンドペーストでも構いません
+  // 引数 idx で指定されたマス目に石を置いた際に、ひっくり返せる石の情報を取得する関数です。
+  // 8つの方向（上下左右および斜め）に対して、ひっくり返せる石の情報を収集します。
+  // 隣接する石が相手の色である場合、その方向に石を追加していき、自分の色が出現したらひっくり返せる石として記録します。
   const squareNums = [
     7 - (idx % 8),
     Math.min(7 - (idx % 8), (56 + (idx % 8) - idx) / 8),
@@ -28,6 +42,7 @@ const getReversibleStones = (idx) => {
     (idx - (idx % 8)) / 8,
     Math.min(7 - (idx % 8), (idx - (idx % 8)) / 8),
   ];
+
   //for文ループの規則を定めるためのパラメータ定義
   const parameters = [1, 9, 8, 7, -1, -9, -8, -7];
 
@@ -81,34 +96,37 @@ const onClickSquare = (index) => {
     return;
   }
 
-  //自分の石を置く 
-  stoneStateList[index] = currentColor;
-  document
-    .querySelector(`[data-index='${index}']`)
-    .setAttribute("data-state", currentColor);
+// 自分の石を置く
+stoneStateList[index] = currentColor;
+document
+  .querySelector(`[data-index='${index}']`)
+  .setAttribute("data-state", currentColor);
 
-  //相手の石をひっくり返す = stoneStateListおよびHTML要素の状態を現在のターンの色に変更する
-  reversibleStones.forEach((key) => {
-    stoneStateList[key] = currentColor;
-    document.querySelector(`[data-index='${key}']`).setAttribute("data-state", currentColor);
-  });
+// 相手の石をひっくり返す
+reversibleStones.forEach((key) => {
+  stoneStateList[key] = currentColor;
+  document.querySelector(`[data-index='${key}']`).setAttribute("data-state", currentColor);
+});
 
-  //もし盤面がいっぱいだったら、集計してゲームを終了する
-  if (stoneStateList.every((state) => state !== 0)) {
-    const blackStonesNum = stoneStateList.filter(state => state === 1).length;
-    const whiteStonesNum = 64 - whiteStonesNum;
+// ゲーム終了後に石の数を再計算して表示を更新
+countStones();
 
-    let winnerText = "";
-    if (blackStonesNum > whiteStonesNum) {
-      winnerText = "黒の勝ちです！";
-    } else if (blackStonesNum < whiteStonesNum) {
-      winnerText = "白の勝ちです！";
-    } else {
-      winnerText = "引き分けです";
-    }
+ // もし盤面がいっぱいだったら、集計してゲームを終了する
+if (stoneStateList.every((state) => state !== 0)) {
+  const blackStonesNum = stoneStateList.filter(state => state === 1).length;
+  const whiteStonesNum = stoneStateList.filter(state => state === 2).length; // 修正点
 
-    alert(`ゲーム終了です。白${whiteStonesNum}、黒${blackStonesNum}で、${winnerText}`)
+  let winnerText = "";
+  if (blackStonesNum > whiteStonesNum) {
+    winnerText = "黒の勝ちです！";
+  } else if (blackStonesNum < whiteStonesNum) {
+    winnerText = "白の勝ちです！";
+  } else {
+    winnerText = "引き分けです";
   }
+
+  alert(`ゲーム終了です。白${whiteStonesNum}、黒${blackStonesNum}で、${winnerText}`)
+}
 
   //ゲーム続行なら相手のターンにする
   changeTurn();
@@ -146,3 +164,5 @@ window.onload = () => {
   createSquares();
   passButton.addEventListener("click", changeTurn)
 }
+
+
