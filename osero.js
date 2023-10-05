@@ -26,12 +26,8 @@ const changeTurn = () => {
     currentTurnText.textContent = "白";
   }
 }
-
 const getReversibleStones = (idx) => {
-  //クリックしたマスから見て、各方向にマスがいくつあるかをあらかじめ計算する
-  // 引数 idx で指定されたマス目に石を置いた際に、ひっくり返せる石の情報を取得する関数です。
-  // 8つの方向（上下左右および斜め）に対して、ひっくり返せる石の情報を収集します。
-  // 隣接する石が相手の色である場合、その方向に石を追加していき、自分の色が出現したらひっくり返せる石として記録します。
+  // クリックしたマスから見て、各方向にマスがいくつあるかをあらかじめ計算する
   const squareNums = [
     7 - (idx % 8),
     Math.min(7 - (idx % 8), (56 + (idx % 8) - idx) / 8),
@@ -43,48 +39,48 @@ const getReversibleStones = (idx) => {
     Math.min(7 - (idx % 8), (idx - (idx % 8)) / 8),
   ];
 
-  //for文ループの規則を定めるためのパラメータ定義
+  // for文ループの規則を定めるためのパラメータ定義
   const parameters = [1, 9, 8, 7, -1, -9, -8, -7];
 
-  //ここから下のロジックはやや入念に読み込みましょう
-  //ひっくり返せることが確定した石の情報を入れる配列
+  // ひっくり返せることが確定した石の情報を入れる配列
   let results = [];
 
-  //8方向への走査のためのfor文
+  // 8方向への走査のためのfor文
   for (let i = 0; i < 8; i++) {
-    //ひっくり返せる可能性のある石の情報を入れる配列
+    // ひっくり返せる可能性のある石の情報を入れる配列
     const box = [];
-    //現在調べている方向にいくつマスがあるか
+    // 現在調べている方向にいくつマスがあるか
     const squareNum = squareNums[i];
     const param = parameters[i];
-    //ひとつ隣の石の状態
+    // ひとつ隣の石の状態
     const nextStoneState = stoneStateList[idx + param];
 
-    //フロー図の[2][3]：隣に石があるか 及び 隣の石が相手の色か -> どちらでもない場合は次のループへ
+    // フロー図の[2][3]：隣に石があるか 及び 隣の石が相手の色か -> どちらでもない場合は次のループへ
     if (nextStoneState === 0 || nextStoneState === currentColor) continue;
-    //隣の石の番号を仮ボックスに格納
+    // 隣の石の番号を仮ボックスに格納
     box.push(idx + param);
 
-    //フロー図[4][5]のループを実装
+    // フロー図[4][5]のループを実装
     for (let j = 0; j < squareNum - 1; j++) {
       const targetIdx = idx + param * 2 + param * j;
       const targetColor = stoneStateList[targetIdx];
-      //フロー図の[4]：さらに隣に石があるか -> なければ次のループへ
-      if (targetColor === 0) continue;
-      //フロー図の[5]：さらに隣にある石が相手の色か
+      // フロー図の[4]：さらに隣に石があるか -> なければ次のループへ
+      if (targetColor === 0) break;
+      // フロー図の[5]：さらに隣にある石が相手の色か
       if (targetColor === currentColor) {
-        //自分の色なら仮ボックスの石がひっくり返せることが確定
+        // 自分の色なら仮ボックスの石がひっくり返せることが確定
         results = results.concat(box);
         break;
       } else {
-        //相手の色なら仮ボックスにその石の番号を格納
+        // 相手の色なら仮ボックスにその石の番号を格納
         box.push(targetIdx);
       }
     }
   }
-  //ひっくり返せると確定した石の番号を戻り値にする
+  // ひっくり返せると確定した石の番号を戻り値にする
   return results;
 };
+
 
 const onClickSquare = (index) => {
   //ひっくり返せる石の数を取得
