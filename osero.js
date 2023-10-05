@@ -99,10 +99,21 @@ document
   .setAttribute("data-state", currentColor);
 
 // 相手の石をひっくり返す
+// 相手の石をひっくり返す部分にアニメーションクラスを追加
 reversibleStones.forEach((key) => {
   stoneStateList[key] = currentColor;
-  document.querySelector(`[data-index='${key}']`).setAttribute("data-state", currentColor);
+  const stoneElement = document.querySelector(`[data-index='${key}']`);
+  stoneElement.setAttribute("data-state", currentColor);
+
+  // アニメーションクラスを適用
+  stoneElement.classList.add("flip-stone");
+
+  // アニメーションが完了したら、クラスを削除するリスナーを追加
+  stoneElement.addEventListener("animationend", () => {
+    stoneElement.classList.remove("flip-stone");
+  });
 });
+
 
 // ゲーム終了後に石の数を再計算して表示を更新
 countStones();
